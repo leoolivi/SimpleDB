@@ -72,8 +72,4 @@ public class BaseQueryHandler implements QueryHandler<String,String> {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println(new DBResponse<String, String>("prova", ResponseStatus.OK, Collections.emptyList()).toString());
-    }
-    
 }
