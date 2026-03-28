@@ -19,7 +19,7 @@ public class BaseQueryProcessor implements QueryProcessor {
     @Override
     public List<String> processQuery(String query) {
         // Validation of the query
-        if (query.contains( (CharSequence) ",./!@#$%ˆ&*()_+{}[]\\|;:'\"/?<>")) throw new InvalidQueryException("Invalid character found");
+        if (query.matches(".*[,./!@#$%^&*()_+{}\\[\\]\\\\|;:'\"/?<>].*")) throw new InvalidQueryException("Invalid character found");
         
         String[] queryChunksArr = query.split("[\s]"); // Splitting the string into chunks divided by spaces
         List<String> queryChunks = Arrays.stream(queryChunksArr).toList(); // Convert to List
