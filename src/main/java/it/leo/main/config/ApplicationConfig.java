@@ -1,12 +1,7 @@
 package it.leo.main.config;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
@@ -34,12 +29,6 @@ public class ApplicationConfig {
     private final DBRepository<String, String> repository;
     private final QueryProcessor queryProcessor;
     private final Scanner scanner;
-    private final FileReader fileReader;
-    private final BufferedReader bufferedReader;
-    private final FileWriter fileWriter;
-    private final BufferedWriter bufferedWriter;
-    private final PrintWriter printWriter;
-    
     // Dependencies
     private final QueryHandler<String, String> queryHandler;
 
@@ -52,13 +41,6 @@ public class ApplicationConfig {
         if (!dbFile.exists()) {
             dbFile.createNewFile();
         }
-        
-        this.fileReader = new FileReader(dbFile);
-        this.bufferedReader = new BufferedReader(fileReader);
-
-        this.fileWriter = new FileWriter(dbFile, true);
-        this.bufferedWriter = new BufferedWriter(fileWriter);
-        this.printWriter = new PrintWriter(bufferedWriter, true);
         
         this.repository = new CsvRepository(dbFilePath);
         this.queryProcessor = new BaseQueryProcessor(commandFactory);
