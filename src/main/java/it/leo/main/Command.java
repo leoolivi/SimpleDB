@@ -1,68 +1,100 @@
 package it.leo.main;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 
-public class Command {
+public final class Command {
     private String name;
-    private Optional<Command[]> subCommands;
+    private List<Command> subCommands = Collections.emptyList();
     private boolean hasArg;
     private String description;
-
-    public Command(String name, boolean hasArg, Optional<Command[]> subCommands, String description) {
-        this.name = name;
-        this.hasArg = hasArg;
-        this.description = description;
-        this.subCommands = subCommands;
-    }
-
-    public Command(String name, boolean hasArg,  String description) {
-        this.name = name;
-        this.hasArg = hasArg;
-        this.description = description;
-        this.subCommands = Optional.empty();
-    }
-    
-    public Command(String name, Command[] subCommands) {
-        this.name = name;
-        this.subCommands = Optional.of(subCommands);
-    }
-
-    public Command(String name) {
-        this.name = name;
-        this.subCommands = Optional.empty();
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public Optional<Command[]> getSubCommands() {
-        return subCommands;
-    }
-
-    public void setSubCommands(Command[] subCommands) {
-        this.subCommands = Optional.of(subCommands);
-    }
-
-
-    public boolean isHasArg() {
-        return hasArg;
+    public void setSubCommands(List<Command> subCommands) {
+        this.subCommands = subCommands;
     }
 
     public void setHasArg(boolean hasArg) {
         this.hasArg = hasArg;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Command> getSubCommands() {
+        return subCommands;
+    }
+
+    public boolean isHasArg() {
+        return hasArg;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    
+    /**
+     * @return number of tokens expected after the command
+     */
+    public int expectedTokens() {
+        int count = 1;
+        count += this.hasArg ? 1 : 0;
+        for (Command sub : subCommands) {
+            count += sub.expectedTokens();
+        }
+        return count;
+    }
+
+    Command(Builder builder ){
+        this.name = builder.name;
+        this.description = builder.description;
+        this.subCommands = builder.subCommands;
+        this.hasArg = builder.hasArg;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String name;
+        private List<Command> subCommands = Collections.emptyList();
+        private boolean hasArg;
+        private String description;
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setSubCommands(List<Command> subCommands) {
+            this.subCommands = subCommands;
+            return this;
+        }
+
+        public Builder setHasArg(boolean hasArg) {
+            this.hasArg = hasArg;
+            return this;
+        }
+
+        public Builder setDescription(String description) {
+            this.description = description;
+            return this;            
+        }
+
+        public Command build() {
+            return new Command(this);
+        }
+
     }
 
 }

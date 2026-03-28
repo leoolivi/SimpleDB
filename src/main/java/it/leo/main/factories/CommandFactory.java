@@ -1,44 +1,30 @@
 package it.leo.main.factories;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import it.leo.main.Command;
-import it.leo.main.exceptions.InvalidCommandException;
 
 public class CommandFactory {
 
-    private final Map<String, Integer> commandsLengths = new HashMap<>();
+    public static final Command GET = Command.builder().setName("GET")
+        .setHasArg(true)
+        .setDescription("Get a value from key. Example: GET key")
+        .build();
 
-    public CommandFactory() {
-        commandsLengths.put("GET", 2);
-        commandsLengths.put("SET", 4);
-        commandsLengths.put("GETALL", 1);
-    }
+    public static final Command GETALL = Command.builder().setName("GETALL")
+        .setHasArg(false)
+        .setDescription("Get all values. Example: GETALL")
+        .build();
 
-    public Command getCommands(String name) throws InvalidCommandException {
-        Command command = new Command(name);
-        switch (name) {
-            case "GET" -> {
-                command.setDescription("Get a value from key. Example: GET key");
-                command.setHasArg(true);
-            }
-            case "SET" -> {
-                command.setDescription("Set a key with value. Example: SET key TO value");
-                command.setHasArg(true);
-                Command[] subCommands = {new Command("TO", true, "Indicates the value of the key. See SET")};
-                command.setSubCommands(subCommands);
-            }
-            case "GETALL" -> {
-                command.setDescription("Get all values. Example: GETALL");
-                command.setHasArg(false);
-            }
-            default -> command = new Command("", new Command[0]); 
-        }
-        return command;
-    }
+    public static final Command SET = Command.builder().setName("SET")
+        .setHasArg(true)
+        .setDescription("Set a key with value. Example: SET key TO value")
+        .setSubCommands(List.of(Command.builder()
+            .setName("TO")
+            .setHasArg(true)
+            .setDescription("Indicates the value")
+            .build()))
+        .build();
 
-    public Map<String, Integer> getCommandsLengths() {
-        return commandsLengths;
-    }
+    public static final List<Command> ALL = List.of(GET, SET, GETALL);
 }

@@ -3,10 +3,8 @@ package it.leo.main.config;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Scanner;
 
-import it.leo.main.Command;
 import it.leo.main.factories.CommandFactory;
 import it.leo.main.handlers.BaseQueryHandler;
 import it.leo.main.handlers.interfaces.QueryHandler;
@@ -44,7 +42,7 @@ public class ApplicationConfig {
         
         this.repository = new CsvRepository(dbFilePath);
         this.queryProcessor = new BaseQueryProcessor(commandFactory);
-        this.queryHandler = new BaseQueryHandler(queryProcessor, repository, commandFactory);
+        this.queryHandler = new BaseQueryHandler(queryProcessor, repository);
     }
 
     public QueryHandler<String, String> getQueryHandler() {
@@ -53,11 +51,5 @@ public class ApplicationConfig {
 
     public Scanner getScanner() {
         return scanner;
-    }
-
-    public List<Command> getCommands() {
-        return List.of(new Command("GET", true, "Get a value from key. Example: GET key"),
-                    new Command("SET", true, "Set a key with value. Example: SET key TO value"),
-                    new Command("GETALL", false, "Get all values. Example: GETALL"));
     }
 }

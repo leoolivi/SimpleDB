@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
 import it.leo.main.config.ApplicationConfig;
+import it.leo.main.factories.CommandFactory;
 
 public class MainClient {
 
@@ -41,7 +41,7 @@ public class MainClient {
             
             
             appConfig = new ApplicationConfig();
-            var commands = appConfig.getCommands();
+            var commands = CommandFactory.ALL;
             var scanner = appConfig.getScanner();
 
             Consumer<Command> printCommandDetails = new Consumer<Command>() {
@@ -51,7 +51,7 @@ public class MainClient {
                     System.out.println("Has arguments: "+c.isHasArg());
                     System.out.println("Description: "+c.getDescription());
                     System.out.println("\n---\n");
-                    c.getSubCommands().ifPresent(sbc -> Arrays.stream(sbc).forEach(this));
+                    c.getSubCommands().forEach(this);
                 }
             };  commands.stream().forEach(printCommandDetails);
 

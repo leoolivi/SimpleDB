@@ -1,7 +1,9 @@
 package it.leo.main.processors;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import it.leo.main.Command;
 import it.leo.main.exceptions.InvalidQueryException;
@@ -24,23 +26,15 @@ public class BaseQueryProcessor implements QueryProcessor {
         String[] queryChunksArr = query.split("[\s]"); // Splitting the string into chunks divided by spaces
         List<String> queryChunks = Arrays.stream(queryChunksArr).toList(); // Convert to List
         
-        int i = 0;
-        List<String> currChunk;
-        Command currCommand;
-        currCommand = commandFactory.getCommands(queryChunks.getFirst());
-
-        switch (currCommand.getName()) {
-            case "GET" -> currChunk = queryChunks.subList(i,i+2);
-            case "SET" -> {
-                if (queryChunks.size() == 4 && queryChunks.get(2).equals("TO")) { 
-                    currChunk = queryChunks.subList(i, i+4); 
-                } else {
-                    throw new InvalidQueryException("SET command syntax not valid");
-                }
-            }
-            case "GETALL" -> currChunk = queryChunks.subList(i, i+1);
-            default -> currChunk = queryChunks.subList(i, i+1);
+        String commandStr = queryChunks.getFirst();
+        Optional<Command> command = Optional.empty();
+        for (Command c : CommandFactory.ALL) {
+            command = c.getName().equals(commandStr) ? Optional.of(c) : command;  
         }
-        return currChunk;
+
+        if (command.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return queryChunks.subList(0, command.get().expectedTokens());
     }
 }
