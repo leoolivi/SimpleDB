@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import it.leo.main.Command;
+import it.leo.main.QueryCommand;
 import it.leo.main.data.DBResponse;
 import it.leo.main.data.enums.ResponseStatus;
-import it.leo.main.factories.CommandFactory;
+import it.leo.main.factories.QueryCommandFactory;
 import it.leo.main.handlers.interfaces.QueryHandler;
 import it.leo.main.persistence.RecordRow;
 import it.leo.main.persistence.interfaces.DBRepository;
@@ -29,14 +29,14 @@ public class BaseQueryHandler implements QueryHandler<String,String> {
         List<String> queryChunks = queryProcessor.processQuery(query);
         
         String commandStr = queryChunks.getFirst();
-        Optional<Command> command = Optional.empty();
+        Optional<QueryCommand> QueryCommand = Optional.empty();
         
-        for (Command c: CommandFactory.ALL) {
-            command = c.getName().equals(commandStr) ? Optional.of(c) : command;
+        for (QueryCommand c: QueryCommandFactory.ALL) {
+            QueryCommand = c.getName().equals(commandStr) ? Optional.of(c) : QueryCommand;
         }
         
-        if (command.isEmpty()) {
-           return new DBResponse<>("Invalid command "+commandStr, ResponseStatus.ERROR, Collections.emptyList()); 
+        if (QueryCommand.isEmpty()) {
+           return new DBResponse<>("Invalid QueryCommand "+commandStr, ResponseStatus.ERROR, Collections.emptyList()); 
         }
 
         String key;
@@ -47,8 +47,8 @@ public class BaseQueryHandler implements QueryHandler<String,String> {
 
 
 
-        if (command.get().expectedTokens() != queryChunks.size()) {
-            msg = "Unmatching n. arguments for the command "+commandStr+": expected "+command.get().expectedTokens()+" got "+queryChunks.size();
+        if (QueryCommand.get().expectedTokens() != queryChunks.size()) {
+            msg = "Unmatching n. arguments for the QueryCommand "+commandStr+": expected "+QueryCommand.get().expectedTokens()+" got "+queryChunks.size();
             status = ResponseStatus.ERROR;
             return new DBResponse<>(msg, status, Collections.emptyList());
         }
@@ -75,7 +75,7 @@ public class BaseQueryHandler implements QueryHandler<String,String> {
                 return new DBResponse<>(msg, status, repository.findAll());
             }
             default -> {
-                return new DBResponse<>("Invalid command "+command, ResponseStatus.ERROR, Collections.emptyList());
+                return new DBResponse<>("Invalid QueryCommand "+QueryCommand, ResponseStatus.ERROR, Collections.emptyList());
             }
         }
     }
