@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Scanner;
 
-import it.leo.main.factories.CommandFactory;
+import it.leo.main.factories.QueryCommandFactory;
 import it.leo.main.handlers.BaseQueryHandler;
 import it.leo.main.handlers.interfaces.QueryHandler;
 import it.leo.main.persistence.CsvRepository;
@@ -21,10 +21,18 @@ public class ApplicationConfig {
 
     public static final String DB_FILE_PATH = "storage/";
     public static final String DB_FILENAME = "db.csv";
+    public static final String SERVER_VERSION = "1.0";
+    public static final String CHARSET = "UTF-8";
+    public static final int MAX_THREAD_POOL_SIZE = 50;
+    public static final int CORE_THREAD_POOL_SIZE = 20;
+    public static final int MAX_WORKER_POOL_SIZE = 20;
+    public static final int CORE_WORKER_POOL_SIZE = 10;
+    public static final int CONNECTION_TIMEOUT = 10000;
 
     // Core components
-    private final CommandFactory commandFactory;
+    private final QueryCommandFactory QueryCommandFactory;
     private final DBRepository<String, String> repository;
+    
     private final QueryProcessor queryProcessor;
     private final Scanner scanner;
     // Dependencies
@@ -32,7 +40,7 @@ public class ApplicationConfig {
 
     public ApplicationConfig() throws IOException {
         this.scanner = new Scanner(System.in);
-        this.commandFactory = new CommandFactory();
+        this.QueryCommandFactory = new QueryCommandFactory();
         
         Path dbFilePath = Path.of(DB_FILE_PATH).resolve(DB_FILENAME);
         File dbFile = dbFilePath.toFile();
@@ -41,15 +49,19 @@ public class ApplicationConfig {
         }
         
         this.repository = new CsvRepository(dbFilePath);
-        this.queryProcessor = new BaseQueryProcessor(commandFactory);
+        this.queryProcessor = new BaseQueryProcessor(QueryCommandFactory);
         this.queryHandler = new BaseQueryHandler(queryProcessor, repository);
     }
-
+    
     public QueryHandler<String, String> getQueryHandler() {
         return queryHandler;
     }
-
+    
     public Scanner getScanner() {
         return scanner;
+    }
+    
+    public DBRepository<String, String> getRepository() {
+        return repository;
     }
 }
