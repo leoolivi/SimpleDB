@@ -45,6 +45,7 @@ public class CLIService {
             System.out.println("Ricevuta conn: "+connection);
             connection.setBufferedReader(new BufferedReader(new InputStreamReader(client.getInputStream())));
             connection.setPrintWriter(new PrintWriter(new OutputStreamWriter(client.getOutputStream())));
+            connection.setClientSocket(client);
             var queryService = new QueryService(connection);
             queryService.start();
         } catch (IOException | ClassNotFoundException ex) {

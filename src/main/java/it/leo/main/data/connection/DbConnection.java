@@ -27,12 +27,13 @@ public final class DbConnection implements AutoCloseable, Serializable {
     private final String UUID;
     private final String serverVersion;
     private final String charset;
-    private transient final Socket clientSocket;
+    private transient Socket clientSocket;
     
 
+    
     private transient BufferedReader bufferedReader;
     private transient PrintWriter printWriter;
-
+    
     public DbConnection(String UUID, String charset, Socket clientSocket, String serverVersion) throws IOException {
         this.UUID = UUID;
         this.charset = charset;
@@ -41,15 +42,15 @@ public final class DbConnection implements AutoCloseable, Serializable {
         this.printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         this.serverVersion = serverVersion;
     }
-
+    
     public String getUUID() {
         return UUID;
     }
-
+    
     public boolean isClosed() {
         return clientSocket.isClosed();
     }
-
+    
     public String getServerVersion() {
         return serverVersion;
     }
@@ -62,11 +63,11 @@ public final class DbConnection implements AutoCloseable, Serializable {
     public void close() throws Exception {
         clientSocket.close();
     }
-
+    
     public BufferedReader getBufferedReader() {
         return bufferedReader;
     }
-
+    
     public PrintWriter getPrintWriter() {
         return printWriter;
     }
@@ -74,7 +75,7 @@ public final class DbConnection implements AutoCloseable, Serializable {
     public Socket getClientSocket() {
         return clientSocket;
     }
-
+    
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject(); // Carica i campi normali (non transient)
         
@@ -84,12 +85,17 @@ public final class DbConnection implements AutoCloseable, Serializable {
         
         System.out.println("Oggetto ricevuto e reader inizializzato sul Client!");
     }
-
+    
     public void setBufferedReader(BufferedReader bufferedReader) {
         this.bufferedReader = bufferedReader;
     }
-
+    
     public void setPrintWriter(PrintWriter printWriter) {
         this.printWriter = printWriter;
     }
+    
+    public void setClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
 }

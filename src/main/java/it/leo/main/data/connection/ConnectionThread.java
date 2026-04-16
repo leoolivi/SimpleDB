@@ -30,7 +30,9 @@ public class ConnectionThread implements Runnable {
             System.getLogger(ConnectionThread.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
         while(!connection.isClosed()) {
+            System.out.println("DEBUG: Processando una nuova richiesta per la connessione "+connection.getUUID()+"...");
             var response = processor.processNextPacket();
+            System.out.println("DEBUG: Sto rispondendo alla connessione "+connection.getUUID()+"...");
             switch (response.status()) {
                 case ResponseStatus.DATA -> connection.getPrintWriter().print(response.toLines());
                 default -> connection.getPrintWriter().print(response.msg());

@@ -26,8 +26,12 @@ public class QueryService {
     }
 
     private void sendPacket(String text) throws IOException {
-        connection.getPrintWriter().println(text);
-        connection.getBufferedReader().lines().forEach(line -> System.out.println(line));
+        if (this.connection.getClientSocket() != null) {
+            connection.getPrintWriter().println(text);
+            connection.getBufferedReader().lines().forEach(line -> System.out.println(line));
+        } else {
+            System.err.println("Connection Client socket is null");
+        }
     }
 
 
