@@ -34,9 +34,13 @@ public class ConnectionThread implements Runnable {
             var response = processor.processNextPacket();
             System.out.println("DEBUG: Sto rispondendo alla connessione "+connection.getUUID()+"...");
             switch (response.status()) {
-                case ResponseStatus.DATA -> connection.getPrintWriter().print(response.toLines());
-                default -> connection.getPrintWriter().print(response.msg());
+                case ResponseStatus.DATA -> response.toLines().forEach(line -> connection.getPrintWriter().println(line));
+                default -> {
+                    connection.getPrintWriter().println(response.msg());
+                    connection.getPrintWriter().println("EOF");
+                }
             }
+            connection.getPrintWriter().flush();
         }
     }
     

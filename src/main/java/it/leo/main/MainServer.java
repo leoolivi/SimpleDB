@@ -44,5 +44,8 @@ public class MainServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        connectionThreadPool.close();
+        workerThreadPool.close();
     }
 }

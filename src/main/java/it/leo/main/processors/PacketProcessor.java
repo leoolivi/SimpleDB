@@ -13,6 +13,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import it.leo.main.QueryCommand;
 import it.leo.main.data.DBResponse;
 import it.leo.main.data.enums.ResponseStatus;
+import it.leo.main.data.tasks.GetAllRecordTask;
+import it.leo.main.data.tasks.GetRecordTask;
 import it.leo.main.data.tasks.SetRecordTask;
 import it.leo.main.exceptions.InvalidQueryException;
 import it.leo.main.factories.QueryCommandFactory;
@@ -33,7 +35,9 @@ public class PacketProcessor {
 
     public DBResponse<String, String> processNextPacket() {
         try {
+            System.out.println("DEBUG: In attesa di readLine...");
             String query = bufferedReader.readLine();
+            System.out.println("DEBUG: Query ricevuta: " + query);
             // Validation of the query
             if (query.matches(".*[,./!@#$%^&*()_+{}\\[\\]\\\\|;:'\"/?<>].*")) throw new InvalidQueryException("Invalid character found");
             
@@ -41,31 +45,26 @@ public class PacketProcessor {
             List<String> queryChunks = Arrays.stream(queryChunksArr).toList(); // Convert to List
             
             String commandStr = queryChunks.getFirst();
+            System.out.println("DEBUG: first query command is " + commandStr);
             Optional<QueryCommand> QueryCommand = Optional.empty();
+            
             for (QueryCommand c : QueryCommandFactory.ALL) {
                 QueryCommand = c.getName().equals(commandStr) ? Optional.of(c) : QueryCommand;  
             }
-
+            
             if (QueryCommand.isEmpty()) {
-                queryChunks = Collections.emptyList();
+                System.out.println("DEBUG: Invalid command");
+                return new DBResponse<>("Invalid QueryCommand "+commandStr, ResponseStatus.ERROR, Collections.emptyList()); 
             }
 
             queryChunks = queryChunks.subList(0, QueryCommand.get().expectedTokens());
             
-            for (QueryCommand c: QueryCommandFactory.ALL) {
-                QueryCommand = c.getName().equals(commandStr) ? Optional.of(c) : QueryCommand;
-            }
             
-            if (QueryCommand.isEmpty()) {
-                return new DBResponse<>("Invalid QueryCommand "+commandStr, ResponseStatus.ERROR, Collections.emptyList()); 
-            }
 
             String key;
             String value;
-            String msg = "";
-            ResponseStatus status = ResponseStatus.OK;
-
-
+            String msg;
+            ResponseStatus status;
 
             if (QueryCommand.get().expectedTokens() != queryChunks.size()) {
                 msg = "Unmatching n. arguments for the QueryCommand "+commandStr+": expected "+QueryCommand.get().expectedTokens()+" got "+queryChunks.size();
@@ -74,19 +73,13 @@ public class PacketProcessor {
             }
 
             switch (commandStr) {
-                /*
                 case "GET" -> {
                         key = queryChunks.get(1);
-                        var rowOptional = repository.findByKey(key);
-                        if (rowOptional.isPresent()) {
-                            rows = List.of(rowOptional.get());
-                            return new DBResponse<>(msg, status, rows);
-                        } else {
-                        return new DBResponse<>("Row not found with key "+key, ResponseStatus.ERROR, Collections.emptyList()); 
-                        }
-                        return null;
+                        var task = new GetRecordTask(key, (DBRepository<String, String>) dbRepository);
+                        var resFuture = threadPoolExecutor.submit(task);
+                        var dbResponse = resFuture.get();
+                        return dbResponse;
                     }
-                */
                 case "SET" -> {
                     key = queryChunks.get(1);
                     value = queryChunks.get(3);
@@ -95,13 +88,15 @@ public class PacketProcessor {
                     var dbResponse = resFuture.get();
                     return dbResponse;
                 }
-                /*
                 case "GETALL" -> {
-                    return new DBResponse<>(msg, status, Collections.emptyList());
+                    var task = new GetAllRecordTask((DBRepository<String, String>) dbRepository);
+                    var resFuture = threadPoolExecutor.submit(task);
+                    var dbResponse = resFuture.get();
+                    return dbResponse;
                 }
-                */
                 default -> {
-                    return new DBResponse<>("Invalid QueryCommand "+QueryCommand, ResponseStatus.ERROR, Collections.emptyList());
+                    System.out.println("DEBUG: Invalid command");
+                    return new DBResponse<>("Invalid query command "+QueryCommand, ResponseStatus.ERROR, Collections.emptyList());
                 }
             }
         } catch (IOException e) {

@@ -23,7 +23,7 @@ public class SetRecordTask extends DBTask<String,String> {
     public DBResponse<String, String> call() {
         try {
             repository.set(key, value);
-            return new DBResponse<>("", ResponseStatus.OK, List.of(new RecordRow(key, value)));
+            return new DBResponse<>("", ResponseStatus.DATA, List.of(new RecordRow(key, value)));
         } catch (Exception e) {
             e.printStackTrace();
             return new DBResponse<>("Error during SET operation", ResponseStatus.ERROR, Collections.emptyList());
