@@ -37,8 +37,9 @@ In this project i'm going to focus on implementing these features:
 
 - [x] Basic creation/reading and updating records
 - [x] Proper error handling
+- [x] Clean up project structure 
 - [ ] More robust communication protocol
-- [ ] Multiple clients handling with Thread pool
+- [x] Multiple clients handling with Thread pool
 - [ ] Concurrency and race conditions handling
 - [ ] Support for more complex tables and queries
 - [ ] Transactions
