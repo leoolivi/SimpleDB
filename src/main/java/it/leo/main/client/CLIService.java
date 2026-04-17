@@ -17,9 +17,9 @@ import it.leo.main.protocol.DbConnection;
 
 public class CLIService {
 
-    private static Scanner scanner;
+    private Scanner scanner;
 
-    private static void showHelp() {
+    private void showHelp() {
         System.out.println("---------- Help message ----------\n");
         CLICommandFactory.ALL.forEach(command -> {
             System.out.println(String.format("- %s: %s", command.getName(), command.getDescription()));
@@ -27,7 +27,7 @@ public class CLIService {
         System.out.print("\n\n");
     }
 
-    private static void handleDBConnection(String args) {
+    private void handleDBConnection(String args) {
         System.out.println("Connecting to the database...");
 
         var argsMap = ArgParser.parseArgs(args);
@@ -52,7 +52,7 @@ public class CLIService {
         }
     } 
 
-    public static void start() {
+    public void start() {
         // Initializing variables
         scanner = new Scanner(System.in);
         String input;
