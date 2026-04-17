@@ -5,13 +5,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Scanner;
 
-import it.leo.main.factories.QueryCommandFactory;
-import it.leo.main.handlers.BaseQueryHandler;
-import it.leo.main.handlers.interfaces.QueryHandler;
-import it.leo.main.persistence.CsvRepository;
-import it.leo.main.persistence.interfaces.DBRepository;
-import it.leo.main.processors.BaseQueryProcessor;
-import it.leo.main.processors.interfaces.QueryProcessor;
+import it.leo.main.protocol.QueryCommandFactory;
+import it.leo.main.server.persistence.CsvRepository;
+import it.leo.main.server.persistence.interfaces.DBRepository;
 
 public class ApplicationConfig {
 
@@ -33,10 +29,8 @@ public class ApplicationConfig {
     private final QueryCommandFactory QueryCommandFactory;
     private final DBRepository<String, String> repository;
     
-    private final QueryProcessor queryProcessor;
     private final Scanner scanner;
     // Dependencies
-    private final QueryHandler<String, String> queryHandler;
 
     public ApplicationConfig() throws IOException {
         this.scanner = new Scanner(System.in);
@@ -49,12 +43,6 @@ public class ApplicationConfig {
         }
         
         this.repository = new CsvRepository(dbFilePath);
-        this.queryProcessor = new BaseQueryProcessor(QueryCommandFactory);
-        this.queryHandler = new BaseQueryHandler(queryProcessor, repository);
-    }
-    
-    public QueryHandler<String, String> getQueryHandler() {
-        return queryHandler;
     }
     
     public Scanner getScanner() {
