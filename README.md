@@ -37,14 +37,16 @@ In this project i'm going to focus on implementing these features:
 
 - [x] Basic creation/reading and updating records
 - [x] Proper error handling
-- [x] Clean up project structure 
-- [ ] More robust communication protocol
+- [x] Clean up project structure
 - [x] Multiple clients handling with Thread pool
+- [ ] More robust communication binary protocol
+- [ ] Auth Layer and security
+- [ ] Efficiency Test
+- [ ] Comment and docs
 - [ ] Concurrency and race conditions handling
 - [ ] Support for more complex tables and queries
 - [ ] Transactions
 - [ ] Database locking
-- [ ] Security features like encryption and auth layer
 
 ## Learning goals
 
