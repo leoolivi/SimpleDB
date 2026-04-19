@@ -24,6 +24,7 @@ public class ApplicationConfig {
     public static final int MAX_WORKER_POOL_SIZE = 20;
     public static final int CORE_WORKER_POOL_SIZE = 10;
     public static final int CONNECTION_TIMEOUT = 10000;
+    
 
     // Core components
     private final DBRepository<String, String> repository;

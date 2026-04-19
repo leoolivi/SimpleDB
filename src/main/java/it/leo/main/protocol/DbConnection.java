@@ -1,6 +1,8 @@
 package it.leo.main.protocol;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -33,13 +35,18 @@ public final class DbConnection implements AutoCloseable, Serializable {
     
     private transient BufferedReader bufferedReader;
     private transient PrintWriter printWriter;
+    private transient DataInputStream inputStream;
+    private transient DataOutputStream outputStream;
+    
     
     public DbConnection(String UUID, String charset, Socket clientSocket, String serverVersion) throws IOException {
         this.UUID = UUID;
         this.charset = charset;
         this.clientSocket = clientSocket;
-        this.bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        this.printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        this.bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // TODO: Remove this (switched to Data I/O Streams)
+        this.printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream())); // TODO: Remove this (switched to Data I/O Streams)
+        this.outputStream = new DataOutputStream(outputStream);
+        this.inputStream = new DataInputStream(inputStream);
         this.serverVersion = serverVersion;
     }
     
@@ -54,11 +61,11 @@ public final class DbConnection implements AutoCloseable, Serializable {
     public String getServerVersion() {
         return serverVersion;
     }
-
+    
     public String getCharset() {
         return charset;
     }
-
+    
     @Override
     public void close() throws Exception {
         clientSocket.close();
@@ -97,5 +104,20 @@ public final class DbConnection implements AutoCloseable, Serializable {
     public void setClientSocket(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
-
+    
+    public DataInputStream getInputStream() {
+        return inputStream;
+    }
+    
+    public DataOutputStream getOutputStream() {
+        return outputStream;
+    }
+    
+    public void setInputStream(DataInputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+    
+    public void setOutputStream(DataOutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
 }

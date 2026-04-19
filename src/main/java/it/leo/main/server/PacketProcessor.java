@@ -1,8 +1,8 @@
 package it.leo.main.server;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,8 +10,10 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import it.leo.main.config.ProtocolConfig;
 import it.leo.main.protocol.QueryCommand;
 import it.leo.main.protocol.QueryCommandFactory;
+import it.leo.main.protocol.utils.SerializerUtil;
 import it.leo.main.server.enums.ResponseStatus;
 import it.leo.main.server.exceptions.InvalidQueryException;
 import it.leo.main.server.persistence.interfaces.DBRepository;
@@ -19,23 +21,32 @@ import it.leo.main.server.tasks.GetAllRecordTask;
 import it.leo.main.server.tasks.GetRecordTask;
 import it.leo.main.server.tasks.SetRecordTask;
 
-public class PacketProcessor {
-    private final BufferedReader bufferedReader;
+public class PacketProcessor implements Serializable {
+    private final DataInputStream inputStream;
     private final ThreadPoolExecutor threadPoolExecutor;
-    private final PrintWriter printWriter;
-    private final DBRepository dbRepository;
+    private final DBRepository<String, String> dbRepository;
 
-    public PacketProcessor(BufferedReader bufferedReader, PrintWriter printWriter, DBRepository dbRepository, ThreadPoolExecutor threadPoolExecutor) {
-        this.bufferedReader = bufferedReader;
-        this.printWriter = printWriter;
+    public PacketProcessor(DBRepository<String, String> dbRepository, DataInputStream inputStream, ThreadPoolExecutor threadPoolExecutor) {
         this.dbRepository = dbRepository;
+        this.inputStream = inputStream;
         this.threadPoolExecutor = threadPoolExecutor;
     }
 
-    public DBResponse<String, String> processNextPacket() {
+    public DBResponse<String, String> processNextPacket() throws ClassNotFoundException {
         try {
             System.out.println("DEBUG: In attesa di readLine...");
-            String query = bufferedReader.readLine();
+            String query;
+            while (true) {
+                if (inputStream.available() > 0) {
+                    var commandByte = inputStream.readByte();
+                    var opcode = inputStream.readByte();
+                    var len = inputStream.readInt();
+                    var payload = inputStream.readNBytes(len);
+
+                    query = String.format("%s %s", ProtocolConfig.getCommandType(commandByte), (DBResponse<String, String>) SerializerUtil.convertBytesToObject(payload));
+                    break;
+                }
+            }
             System.out.println("DEBUG: Query ricevuta: " + query);
             // Validation of the query
             if (query.matches(".*[,./!@#$%^&*()_+{}\\[\\]\\\\|;:'\"/?<>].*")) throw new InvalidQueryException("Invalid character found");
@@ -57,8 +68,6 @@ public class PacketProcessor {
             }
 
             queryChunks = queryChunks.subList(0, QueryCommand.get().expectedTokens());
-            
-            
 
             String key;
             String value;
