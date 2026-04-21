@@ -2,6 +2,7 @@ package it.leo.main.server;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,9 +27,9 @@ public class PacketProcessor implements Serializable {
     private final ThreadPoolExecutor threadPoolExecutor;
     private final DBRepository<String, String> dbRepository;
 
-    public PacketProcessor(DBRepository<String, String> dbRepository, DataInputStream inputStream, ThreadPoolExecutor threadPoolExecutor) {
+    public PacketProcessor(DBRepository<String, String> dbRepository, InputStream inputStream, ThreadPoolExecutor threadPoolExecutor) {
         this.dbRepository = dbRepository;
-        this.inputStream = inputStream;
+        this.inputStream = new DataInputStream(inputStream);
         this.threadPoolExecutor = threadPoolExecutor;
     }
 

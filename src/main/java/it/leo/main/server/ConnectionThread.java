@@ -1,7 +1,7 @@
 package it.leo.main.server;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import it.leo.main.config.ProtocolConfig;
@@ -17,11 +17,11 @@ public class ConnectionThread implements Runnable {
     private final DbConnection connection;
     private final PacketProcessor processor;
 
-    public ConnectionThread(DbConnection connection, ThreadPoolExecutor threadPoolExecutor, DBRepository<String, String> dbRepository) {
+    public ConnectionThread(DbConnection connection, ThreadPoolExecutor threadPoolExecutor, DBRepository<String, String> dbRepository) throws IOException {
         this.connection = connection;
         this.processor = new PacketProcessor(
             dbRepository,
-            connection.getInputStream(),
+            connection.getClientSocket().getInputStream(),
             threadPoolExecutor);
     }
 
@@ -29,8 +29,8 @@ public class ConnectionThread implements Runnable {
     public void run() {
         // Connection Procedure
         try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(connection.getClientSocket().getOutputStream());
-            outputStream.writeObject(connection);
+            DataOutputStream outputStream = new DataOutputStream(connection.getClientSocket().getOutputStream());
+            outputStream.writeChars(connection.toString());
         } catch (IOException ex) {
             System.getLogger(ConnectionThread.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -46,7 +46,7 @@ public class ConnectionThread implements Runnable {
                         .opcode(ProtocolConfig.getOpCodeByte(OpCodeType.RESPONSE))
                         .payload(SerializerUtil.convertObjectToBytes(response))
                         .build();
-                packet.writeTo(connection.getOutputStream());
+                packet.writeTo(connection.getClientSocket().getOutputStream());
             } catch (ClassNotFoundException | IOException ex) {
                 System.getLogger(ConnectionThread.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }

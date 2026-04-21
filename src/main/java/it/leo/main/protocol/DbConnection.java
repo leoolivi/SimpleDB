@@ -24,29 +24,16 @@ Fields to store in a DB Conn
 */
 public final class DbConnection implements AutoCloseable, Serializable {
 
-    private static final long serialVersionUID = 1036769926986257780L;
-
     private final String UUID;
     private final String serverVersion;
     private final String charset;
     private transient Socket clientSocket;
-    
-
-    
-    private transient BufferedReader bufferedReader;
-    private transient PrintWriter printWriter;
-    private transient DataInputStream inputStream;
-    private transient DataOutputStream outputStream;
     
     
     public DbConnection(String UUID, String charset, Socket clientSocket, String serverVersion) throws IOException {
         this.UUID = UUID;
         this.charset = charset;
         this.clientSocket = clientSocket;
-        this.bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // TODO: Remove this (switched to Data I/O Streams)
-        this.printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream())); // TODO: Remove this (switched to Data I/O Streams)
-        this.outputStream = new DataOutputStream(outputStream);
-        this.inputStream = new DataInputStream(inputStream);
         this.serverVersion = serverVersion;
     }
     
@@ -70,19 +57,12 @@ public final class DbConnection implements AutoCloseable, Serializable {
     public void close() throws Exception {
         clientSocket.close();
     }
-    
-    public BufferedReader getBufferedReader() {
-        return bufferedReader;
-    }
-    
-    public PrintWriter getPrintWriter() {
-        return printWriter;
-    }
-    
+
     public Socket getClientSocket() {
         return clientSocket;
     }
     
+    /*
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject(); // Carica i campi normali (non transient)
         
@@ -91,33 +71,14 @@ public final class DbConnection implements AutoCloseable, Serializable {
         // this.printWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         
         System.out.println("Oggetto ricevuto e reader inizializzato sul Client!");
-    }
-    
-    public void setBufferedReader(BufferedReader bufferedReader) {
-        this.bufferedReader = bufferedReader;
-    }
-    
-    public void setPrintWriter(PrintWriter printWriter) {
-        this.printWriter = printWriter;
-    }
+    } */
     
     public void setClientSocket(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
-    
-    public DataInputStream getInputStream() {
-        return inputStream;
-    }
-    
-    public DataOutputStream getOutputStream() {
-        return outputStream;
-    }
-    
-    public void setInputStream(DataInputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-    
-    public void setOutputStream(DataOutputStream outputStream) {
-        this.outputStream = outputStream;
+
+    @Override
+    public String toString() {
+        return String.format("DB CONNECTION uuid=%s server_version=%s charset=%s", UUID, serverVersion, charset);
     }
 }

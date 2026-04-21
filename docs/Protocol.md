@@ -21,7 +21,7 @@ A well defined packet structure to wait for, described byte per byte. See exampl
   - OK 0x01
   - ERROR 0x02
 - Error msg len (int)
-- Error msg (if present) bytes[]
+- Error msg (if present) byte[]
 - chunk length (int)
 - value
 

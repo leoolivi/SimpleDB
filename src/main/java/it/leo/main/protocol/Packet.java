@@ -3,33 +3,26 @@ package it.leo.main.protocol;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class Packet {
+public abstract class Packet {
     private final byte command;
     private final byte opcode;
-    private final int length;
-    private final byte[] payload;
+    private final byte status;
+    private final int error_msg_len;
+    private final byte[] error_msg;
+    private final int n_chunks;
 
-    public byte getCommand() {
-        return command;
-    }
-    public byte getOpcode() {
-        return opcode;
-    }
-    public int getLength() {
-        return length;
-    }
-    public byte[] getPayload() {
-        return payload;
-    }
-
-    public Packet(byte command, byte opcode, byte[] payload) {
-        this.command = command;
-        this.opcode = opcode;
-        this.payload = payload;
-        this.length = payload.length;
-    }
+    
     public static Builder builder() {
         return new Builder();
+    }
+
+    public Packet(byte command, byte[] error_msg, int error_msg_len, int n_chunks, byte opcode, byte status) {
+        this.command = command;
+        this.error_msg = error_msg;
+        this.error_msg_len = error_msg_len;
+        this.n_chunks = n_chunks;
+        this.opcode = opcode;
+        this.status = status;
     }
     
     public static class Builder {
