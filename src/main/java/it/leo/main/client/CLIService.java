@@ -1,13 +1,7 @@
 package it.leo.main.client;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
@@ -47,10 +41,6 @@ public class CLIService {
             ObjectInputStream objectInputStream = new ObjectInputStream(client.getInputStream());
             DbConnection connection = (DbConnection) objectInputStream.readObject();
             System.out.println("Ricevuta conn: "+connection);
-            connection.setBufferedReader(new BufferedReader(new InputStreamReader(client.getInputStream())));
-            connection.setPrintWriter(new PrintWriter(new OutputStreamWriter(client.getOutputStream())));
-            connection.setInputStream(new DataInputStream(client.getInputStream()));
-            connection.setOutputStream(new DataOutputStream(client.getOutputStream()));
             connection.setClientSocket(client);
             var queryService = new QueryService(connection);
             queryService.start();
