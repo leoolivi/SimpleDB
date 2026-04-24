@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 import it.leo.main.protocol.DbConnection;
 import it.leo.main.protocol.QueryCommandFactory;
-import it.leo.main.protocol.data.packets.GetRequestPacket;
+import it.leo.main.protocol.data.packets.request.GetRequestPacket;
 import it.leo.main.protocol.utils.SerializerUtil;
 import it.leo.main.server.DBResponse;
 

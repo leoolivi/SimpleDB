@@ -17,13 +17,18 @@ A well defined packet structure to wait for, described byte per byte. See exampl
 - Op Code
   - REQUEST 0x01
   - RESPONSE 0x02
-- Status (only res)
+- Status (only response)
   - OK 0x01
   - ERROR 0x02
+- QUERY_REQ (only request, byte)
+  - GET 0x01
+  - SET 0x02
+  - GETALL 0x03
 - Error msg len (int)
 - Error msg (if present) byte[]
-- chunk length (int)
-- value
+- number of chunks (int)
+- chunk length (int) // FOR EACH CHUNK !!
+- value // FOR EACH CHUNK !!
 
 ## Real Packets Structures
 
